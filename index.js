@@ -55,47 +55,11 @@ mainWindow = new BrowserWindow({
       
 
 
-      
-
-
       mainWindow.webContents.send('take','take_screen_shot');
 
-
+      mainWindow.setFullScreen(true);
       mainWindow.show();
 
-
-      
-    
-
-
-    //   captureWindow = new BrowserWindow({
-    //   minimizable: true,
-    //   skipTaskbar: true,
-    //   frame: false,
-    //   show: false,
-      
-      
-    // });
-
-    // captureWindow.loadURL(url.format(
-    // {
-    //   pathname: path.join(__dirname, 'captureWindow.html'),
-    //   protocol: 'file:'
-    //   //slashes: ture
-
-    // }));
-
-      
-
-
-
-
-
-
-
-
-
-      // mainWindow.show()
 
       
     })

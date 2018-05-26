@@ -35,15 +35,16 @@ ipcRenderer.on('take', function (arg) {
         sources.forEach(function (source) {
             console.log(source.name);
             if (source.name === 'Entire screen' || source.name === 'Screen 1') {
-                console.log('Got source');
+                // console.log('Got source');
                 
-                console.log(source);
+                // console.log(source);
 
                 const screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
                 fs.writeFile(screenshotPath, source.thumbnail.toPNG(), function (err) {
                     if (err) return console.log(err.message);
-                    console.log(screenshotPath)
-                    shell.openExternal('file://' + screenshotPath);
+                    // console.log(screenshotPath)
+                    // shell.openExternal('file://' + screenshotPath);
+                    document.getElementById("ScreenShotImage").src = screenshotPath;
 
                 })
 
@@ -59,7 +60,8 @@ ipcRenderer.on('take', function (arg) {
 
 
 function determineScreenShot() {
-    const screenSize = electronScreen.getPrimaryDisplay().workAreaSize;
+    const screenSize = electronScreen.getPrimaryDisplay().size;
+    console.log(electronScreen.getPrimaryDisplay());
     const maxDimensions = Math.max(screenSize.width, screenSize.height);
     return {
         width: maxDimensions * window.devicePixelRatio,
