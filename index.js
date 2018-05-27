@@ -15,6 +15,7 @@ const { app, BrowserWindow, Menu, globalShortcut } = electron;
 
 
 let mainWindow;
+let captureWindow;
 
 
 
@@ -30,61 +31,53 @@ app.on('ready', function () {
   const screenSize = electronScreen.getPrimaryDisplay().size;
 
 
-  mainWindow = new BrowserWindow({
-    //minimizable: true,
-    //fullscreen: true,
-    //skipTaskbar: true,
-    frame: false,
-    show: false,
 
-    enableLargerThanScreen: true,
-    width: screenSize.width,
-    height: screenSize.height,
-    // backgroundColor: '#000000',
-    //opacity: 0.5,
-    transparent: true,
-    titleBarStyle: 'hidden'
-  });
+  captureWindow = new BrowserWindow({
+    show: false
+  })
 
-  mainWindow.loadURL(url.format(
-    {
-      pathname: path.join(__dirname, 'mainWindow.html'),
-      protocol: 'file:'
-      //slashes: ture
+  captureWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'captureWindow.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
 
-    }));
-
-  mainWindow.setSize(screenSize.width, screenSize.height);
-
-
-  console.log(mainWindow.getSize());
-  // mainWindow.setFullScreen(true);
-  // mainWindow.hide();
 
 
   // Register a 'CommandOrControl+Insert' shortcut listener.
   const ret = globalShortcut.register('CommandOrControl+Insert', () => {
 
+
+
+
+    captureWindow.webContents.send('take', 'take_screen_shot');
+
     console.log('CommandOrControl+Insert is pressed')
-    mainWindow.webContents.send('take', 'take_screen_shot');
+
+    mainWindow = new BrowserWindow({
+      minimizable: true,
+      fullscreen: true,
+      skipTaskbar: true,
+      frame: false,
+      show: true,
+
+      // enableLargerThanScreen: true,
+      width: screenSize.width,
+      height: screenSize.height,
+
+      titleBarStyle: 'hidden'
+    });
+
+    mainWindow.loadURL(url.format(
+      {
+        pathname: path.join(__dirname, 'mainWindow.html'),
+        protocol: 'file:',
+        slashes: true
+
+      }));
 
 
-
-
-    // mainWindow.maximize();
-    // mainWindow.setPosition(0,0);
-    // mainWindow.center();
-    mainWindow.setFullScreen(true);
-    mainWindow.show()
-    // mainWindow.setBounds({
-    //   x: 0,
-    //   y: 0,
-    //   width: screenSize.width,
-    //   height: screenSize.height
-    // });
-
-
-    console.log(mainWindow.getSize());
+    // captureWindow.close();
 
 
 
