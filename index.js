@@ -31,11 +31,13 @@ app.on('ready', function () {
 
 
   mainWindow = new BrowserWindow({
-    minimizable: true,
-    fullscreen: true,
-    skipTaskbar: true,
+    //minimizable: true,
+    //fullscreen: true,
+    //skipTaskbar: true,
     frame: false,
     show: false,
+
+    enableLargerThanScreen: true,
     width: screenSize.width,
     height: screenSize.height,
     // backgroundColor: '#000000',
@@ -52,8 +54,11 @@ app.on('ready', function () {
 
     }));
 
+  mainWindow.setSize(screenSize.width, screenSize.height);
+
 
   console.log(mainWindow.getSize());
+  // mainWindow.setFullScreen(true);
   // mainWindow.hide();
 
 
@@ -62,19 +67,27 @@ app.on('ready', function () {
 
     console.log('CommandOrControl+Insert is pressed')
     mainWindow.webContents.send('take', 'take_screen_shot');
-   
-   
-    
-    mainWindow.setFullScreen(true);
+
+
+
+
     // mainWindow.maximize();
-    mainWindow.setPosition(0,0);
-    mainWindow.center();
+    // mainWindow.setPosition(0,0);
+    // mainWindow.center();
+    mainWindow.setFullScreen(true);
     mainWindow.show()
-    mainWindow.reload();
-    console.log(mainWindow.isFullScreen());
+    // mainWindow.setBounds({
+    //   x: 0,
+    //   y: 0,
+    //   width: screenSize.width,
+    //   height: screenSize.height
+    // });
 
 
-    
+    console.log(mainWindow.getSize());
+
+
+
 
 
 

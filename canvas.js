@@ -1,12 +1,16 @@
 var canvas = document.querySelector('canvas');
 
+console.log(window.innerHeight);
 
 
+canvas.width = window.outerWidth;
+canvas.height = window.outerHeight;
+console.log(window) 
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight; 
+ console.log("document.body");
+ console.log(document.body)
 
- 
+  
 
 
 
