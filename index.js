@@ -18,6 +18,10 @@ let mainWindow;
 let captureWindow;
 
 
+const menuTemplate = [ ]
+
+
+
 
 
 
@@ -30,7 +34,8 @@ app.on('ready', function () {
 
   const screenSize = electronScreen.getPrimaryDisplay().size;
 
-
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 
   captureWindow = new BrowserWindow({
     show: false
@@ -60,6 +65,8 @@ app.on('ready', function () {
       skipTaskbar: true,
       frame: false,
       show: true,
+      
+      
 
       // enableLargerThanScreen: true,
       width: screenSize.width,
@@ -75,6 +82,9 @@ app.on('ready', function () {
         slashes: true
 
       }));
+
+      // mainWindow.setMenu(menu);
+      mainWindow.webContents.openDevTools();
 
 
     // captureWindow.close();
