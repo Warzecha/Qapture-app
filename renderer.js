@@ -12,13 +12,11 @@ const electronScreen = electron.screen;
 const { ipcRenderer } = require('electron')
 
 
-// var canvas = document.querySelector('canvas');
-
-// var ipc = require('ipc');
-
 let screenshotPath = '';
 
 ipcRenderer.on('take', function (arg) {
+
+   
     
    
     const thumbSize = determineScreenShot();
