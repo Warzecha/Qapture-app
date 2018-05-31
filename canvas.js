@@ -1,13 +1,12 @@
 var canvas = document.querySelector('canvas');
-
-
 const electron = require('electron');
 
+const main = require('electron').remote.require('./index.js');
 
 var Mousetrap = require('mousetrap');
 
 const nativeImage = require('electron').nativeImage;
-const ipc = require('electron').ipcRenderer;
+// const ipc = require('electron').ipcRenderer;
 
 const path = require('path');
 const fs = require('fs');
@@ -50,7 +49,7 @@ Mousetrap.bind('ctrl+c', function () {
     fs.writeFile(cropped_image_path, cropped_img.toPNG(), function (err) {
         if (err) return console.log(err.message);
         else {
-            ipc.send('copy-cropped');
+            main.copy_cropped();
         }
     })
 
@@ -212,7 +211,8 @@ Mousetrap.bind('ctrl+a', function () {
 });
 
 Mousetrap.bind('esc', function () {
-    ipc.send('close_main_window');
+    console.log('want to close')
+    main.close_main_window()
 });
 
 

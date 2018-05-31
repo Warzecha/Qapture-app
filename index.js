@@ -67,7 +67,7 @@ app.on('ready', function () {
       fullscreen: true,
       skipTaskbar: true,
       frame: false,
-      show: true,
+      show: false,
 
 
 
@@ -85,26 +85,13 @@ app.on('ready', function () {
         slashes: true
 
       }));
-
+    
     // mainWindow.setMenu(menu);
-    mainWindow.webContents.openDevTools();
-
-
-    // captureWindow.close();
-
-    ipcMain.on('copy-cropped', function () {
-      console.log('copy-cropped-image');
-      let img_path = path.join(os.tmpdir(), 'cropped.png');
-      console.log(img_path);
-      let n_img = nativeImage.createFromPath(img_path);
-      console.log(n_img);
-      console.log(n_img.getSize())
-      clipboard.writeImage(n_img);
-
-
-
-
-
+    
+    mainWindow.once('ready-to-show', () => {
+      mainWindow.show()
+      mainWindow.webContents.openDevTools();
+      mainWindow.focus()
     })
 
 
@@ -137,6 +124,31 @@ app.on('will-quit', () => {
   globalShortcut.unregisterAll()
 })
 
+exports.copy_cropped = () => {
 
+  console.log('copy-cropped-image');
+  let img_path = path.join(os.tmpdir(), 'cropped.png');
+  console.log(img_path);
+  let n_img = nativeImage.createFromPath(img_path);
+  console.log(n_img);
+  console.log(n_img.getSize())
+  clipboard.writeImage(n_img);
+
+}
+
+exports.close_main_window = () => {
+
+  mainWindow.close();
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  })
+  let original_img_path = path.join(os.tmpdir(), 'screenshot.png');
+  let cropped_img_path = path.join(os.tmpdir(), 'cropped.png');
+  fs.unlink(original_img_path, (err) => {});
+  fs.unlink(cropped_img_path, (err) => {});
+
+
+}
 
 

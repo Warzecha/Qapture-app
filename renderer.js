@@ -12,7 +12,6 @@ const electronScreen = electron.screen;
 const { ipcRenderer } = require('electron')
 
 
-let screenshotPath = '';
 
 ipcRenderer.on('take', function (arg) {
 
@@ -40,7 +39,7 @@ ipcRenderer.on('take', function (arg) {
                 
                 // console.log(source);
 
-                screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
+                let screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
                 fs.writeFile(screenshotPath, source.thumbnail.toPNG(), function (err) {
                     if (err) return console.log(err.message);
                     // console.log(screenshotPath)
