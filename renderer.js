@@ -16,7 +16,6 @@ let screenshotPath = '';
 
 ipcRenderer.on('take', function (arg) {
 
-    console.log("jestem rendererem");
    
     
    

@@ -7,9 +7,9 @@ const fs = require('fs');
 const os = require('os');
 
 
-const { ipcMain } = require('electron');
-
-
+const ipcMain = require('electron').ipcMain;
+const nativeImage = require('electron').nativeImage;
+const clipboard = require('electron').clipboard;
 
 const { app, BrowserWindow, Menu, globalShortcut } = electron;
 
@@ -18,7 +18,7 @@ let mainWindow;
 let captureWindow;
 
 
-const menuTemplate = [ ]
+const menuTemplate = []
 
 
 
@@ -29,6 +29,9 @@ const menuTemplate = [ ]
 //Listen if app is ready
 
 app.on('ready', function () {
+
+  console.log(process.versions.electron);
+
 
   const electronScreen = electron.screen;
 
@@ -65,8 +68,8 @@ app.on('ready', function () {
       skipTaskbar: true,
       frame: false,
       show: true,
-      
-      
+
+
 
       // enableLargerThanScreen: true,
       width: screenSize.width,
@@ -83,13 +86,26 @@ app.on('ready', function () {
 
       }));
 
-      // mainWindow.setMenu(menu);
-      mainWindow.webContents.openDevTools();
+    // mainWindow.setMenu(menu);
+    mainWindow.webContents.openDevTools();
 
 
     // captureWindow.close();
 
+    ipcMain.on('copy-cropped', function () {
+      console.log('copy-cropped-image');
+      let img_path = path.join(os.tmpdir(), 'cropped.png');
+      console.log(img_path);
+      let n_img = nativeImage.createFromPath(img_path);
+      console.log(n_img);
+      console.log(n_img.getSize())
+      clipboard.writeImage(n_img);
 
+
+
+
+
+    })
 
 
 

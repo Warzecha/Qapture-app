@@ -3,11 +3,11 @@ var canvas = document.querySelector('canvas');
 
 const electron = require('electron');
 
-var Jimp = require('jimp');
-var Mousetrap = require('mousetrap');
-const { clipboard } = require('electron')
-const nativeImage = require('electron').nativeImage
 
+var Mousetrap = require('mousetrap');
+
+const nativeImage = require('electron').nativeImage;
+const ipc = require('electron').ipcRenderer;
 
 const path = require('path');
 const fs = require('fs');
@@ -21,7 +21,7 @@ let selection = {
 }
 
 
-console.log(Jimp)
+
 
 Mousetrap.bind('ctrl+c', function () {
 
@@ -34,18 +34,25 @@ Mousetrap.bind('ctrl+c', function () {
     let cropped_image_path = path.join(os.tmpdir(), 'cropped.png');
     let img_path = path.join(os.tmpdir(), 'screenshot.png');
 
-    // Jimp.read(path.join(os.tmpdir(), 'screenshot.png'), function (err, img) {
-    //     if (err) 
-    //     {
-    //         console.log(err)
-    //     }
-    //     return img.crop(x, y, width, height).
-    //     img.write(cropped_image_path);
-    // });
 
+
+
+
+    // console.log(img_path);
     let n_img = nativeImage.createFromPath(img_path);
+    let cropped_img = n_img.crop({
+        x: x,
+        y: y,
+        width: width,
+        height: height
+    })
 
-    clipboard.writeImage(n_img);
+    fs.writeFile(cropped_image_path, cropped_img.toPNG(), function (err) {
+        if (err) return console.log(err.message);
+        else {
+            ipc.send('copy-cropped');
+        }
+    })
 
 
 
@@ -120,6 +127,94 @@ canvas.addEventListener("mousemove", function (event) {
 
 
 })
+
+
+Mousetrap.bind('up', function () {
+    selection.y1 -= 1;
+    selection.y2 -= 1;
+});
+
+Mousetrap.bind('down', function () {
+    selection.y1 += 1;
+    selection.y2 += 1;
+});
+
+Mousetrap.bind('left', function () {
+    selection.x1 -= 1;
+    selection.x2 -= 1;
+});
+
+Mousetrap.bind('right', function () {
+    selection.x1 += 1;
+    selection.x2 += 1;
+});
+
+Mousetrap.bind('shift+up', function () {
+
+    if(selection.y2 < selection.y1)
+    {
+        selection.y1 -= 1;
+    }
+    else
+    {
+        selection.y2 -= 1;
+    }
+
+});
+
+
+Mousetrap.bind('shift+down', function () {
+
+    if(selection.y2 < selection.y1)
+    {
+        selection.y1 += 1;
+    }
+    else
+    {
+        selection.y2 += 1;
+    }
+
+});
+
+
+Mousetrap.bind('shift+right', function () {
+
+    if(selection.x2 < selection.x1)
+    {
+        selection.x1 += 1;
+    }
+    else
+    {
+        selection.x2 += 1;
+    }
+
+});
+
+Mousetrap.bind('shift+left', function () {
+
+    if(selection.x2 < selection.x1)
+    {
+        selection.x1 -= 1;
+    }
+    else
+    {
+        selection.x2 -= 1;
+    }
+
+});
+
+
+Mousetrap.bind('ctrl+a', function () {
+    selection.x1 = 0;
+    selection.y1 = 0;
+    selection.x2 = canvas.width;
+    selection.y2 = canvas.height;
+});
+
+Mousetrap.bind('esc', function () {
+    ipc.send('close_main_window');
+});
+
 
 
 
