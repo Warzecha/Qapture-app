@@ -18,10 +18,8 @@
   },
   "homepage": "https://github.com/Warzecha/screen_capture#readme",
   "dependencies": {
-    "electron": "^2.0.0",
-    "electron-screenshot-service": "^4.0.3",
+    "electron": "^2.0.2",
     "jimp": "^0.2.28",
-    "mousetrap": "^1.6.1",
-    "robotjs": "^0.5.1"
+    "mousetrap": "^1.6.1"
   }
 }
