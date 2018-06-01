@@ -75,7 +75,7 @@ app.on('ready', function () {
           slashes: true
         }));
 
-        aboutWindow.webContents.openDevTools();
+        // aboutWindow.webContents.openDevTools();
 
       }
     },
@@ -141,10 +141,10 @@ app.on('ready', function () {
 
     mainWindow.once('ready-to-show', () => {
       mainWindow.show()
-      mainWindow.webContents.openDevTools();
+      
       mainWindow.focus()
     })
-
+    // mainWindow.webContents.openDevTools();
 
 
   }

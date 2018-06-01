@@ -12,6 +12,10 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
+let lastMouseX;
+let lastMouseY;
+
+
 let selection = {
     x1: 0,
     y1: 0,
@@ -86,18 +90,34 @@ image.addEventListener('load', function () {
 }, false);
 
 
-let pressed = false;
+let new_selection = false;
+
+let dragging = false;
+let drag_prevX;
+let drag_prevY;
+
 
 
 canvas.addEventListener('mousedown', function (event) {
 
     // console.log(event);
 
+    if(insideSelection())
+    {
+        dragging = true;
+        drag_prevX = event.screenX;
+        drag_prevY = event.screenY;
+
+    }
+    else
+    {
     selection.x1 = event.screenX;
     selection.y1 = event.screenY;
     selection.x2 = event.screenX;
     selection.y2 = event.screenY;
-    pressed = true;
+    new_selection = true;
+    }
+    
 
 
 
@@ -108,21 +128,45 @@ canvas.addEventListener('mousedown', function (event) {
 
 canvas.addEventListener("mouseup", function (event) {
 
-    // The target of the event is always the document,
-    // but it is possible to retrieve the locked element through the API
-    //console.log(event);
-    selection.x2 = event.screenX;
-    selection.y2 = event.screenY;
-    pressed = false;
+
+    if (new_selection) {
+        selection.x2 = event.screenX;
+        selection.y2 = event.screenY;
+        new_selection = false;
+    }
+    else if(dragging)
+    {
+        dragging = false;
+
+    }
+
 
 });
 
 canvas.addEventListener("mousemove", function (event) {
 
-    if (pressed) {
+    if (new_selection) {
         selection.x2 = event.screenX;
         selection.y2 = event.screenY;
+    } else if(dragging)
+    {
+        let deltaX = event.screenX - drag_prevX;
+        let deltaY = event.screenY - drag_prevY;
+
+        selection.x1 += deltaX;
+        selection.y1 += deltaY;
+        selection.x2 += deltaX;
+        selection.y2 += deltaY;
+
+        drag_prevX = event.screenX;
+        drag_prevY = event.screenY;
+
     }
+
+    lastMouseX = event.screenX;
+    lastMouseY = event.screenY;
+    
+
 
 
 })
@@ -234,9 +278,71 @@ function animate() {
     ctx.fillRect(Math.min(selection.x1, selection.x2), 0, Math.abs(selection.x2 - selection.x1), Math.min(selection.y1, selection.y2));
     ctx.fillRect(Math.min(selection.x1, selection.x2), Math.max(selection.y1, selection.y2), Math.abs(selection.x2 - selection.x1), canvas.height);
 
+    if(insideSelection())
+    {
+        console.log('Change cursor')
+        canvas.style.cursor = 'move';
+    }else if((atTopBorder() && atLeftBorder()) || (atBottomBorder() && atRightBorder()))
+    {
+        canvas.style.cursor = 'nwse-resize';
+    }else if((atBottomBorder() && atLeftBorder()) || (atTopBorder() && atRightBorder()))
+    {
+        canvas.style.cursor = 'nesw-resize';
+        
+    }
+    else if(atTopBorder() || atBottomBorder())
+    {
+        canvas.style.cursor = 'ns-resize';
+    }
+    else if(atLeftBorder() || atRightBorder())
+    {
+        canvas.style.cursor = 'ew-resize';
+    }
+    else
+    {
+        canvas.style.cursor = 'crosshair';
+    }
 
 
 
 
+}
 
+let border_width = 5;
+
+function insideSelection()
+{
+    
+return ((selection.x1 + border_width < lastMouseX && lastMouseX < selection.x2 - border_width ) || (selection.x2 + border_width < lastMouseX && lastMouseX < selection.x1 - border_width )) && ((selection.y1 + border_width < lastMouseY && lastMouseY < selection.y2 - border_width ) || (selection.y2 + border_width < lastMouseY && lastMouseY < selection.y1 - border_width ))
+
+}
+
+function atTopBorder()
+{
+    let topBorderY = Math.min(selection.y1, selection.y2);
+
+    return ((selection.x1 < lastMouseX && lastMouseX < selection.x2 ) && Math.abs(lastMouseY - topBorderY) <= border_width);
+}
+
+
+function atBottomBorder()
+{
+    let bottomBorderY = Math.max(selection.y1, selection.y2);
+
+    return ((selection.x1 < lastMouseX && lastMouseX < selection.x2 ) && Math.abs(lastMouseY - bottomBorderY) <= border_width);
+}
+
+
+function atLeftBorder()
+{
+    let leftBorderX = Math.min(selection.x1, selection.x2);
+
+    return ((selection.y1< lastMouseY && lastMouseY < selection.y2 ) && Math.abs(lastMouseX - leftBorderX) <= border_width);
+}
+
+function atRightBorder()
+{
+    let rightBorderX = Math.max(selection.x1, selection.x2);
+
+    return ((selection.y1< lastMouseY && lastMouseY < selection.y2 ) && Math.abs(lastMouseX - rightBorderX) <= border_width);
 }
