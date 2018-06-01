@@ -11,11 +11,13 @@ const ipcMain = require('electron').ipcMain;
 const nativeImage = require('electron').nativeImage;
 const clipboard = require('electron').clipboard;
 
-const { app, BrowserWindow, Menu, globalShortcut } = electron;
+const { app, BrowserWindow, Menu, globalShortcut, Tray } = electron;
 
 
-let mainWindow;
-let captureWindow;
+let mainWindow = null;
+let captureWindow = null;
+let aboutWindow = null;
+let tray = null
 
 
 const menuTemplate = []
@@ -30,11 +32,8 @@ const menuTemplate = []
 
 app.on('ready', function () {
 
-  console.log(process.versions.electron);
-
 
   const electronScreen = electron.screen;
-
   const screenSize = electronScreen.getPrimaryDisplay().size;
 
   const menu = Menu.buildFromTemplate(menuTemplate);
@@ -52,11 +51,63 @@ app.on('ready', function () {
 
 
 
+  tray = new Tray('./assets/images/tray_icon.png')
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Take screenshot',
+      click() {
+        takeScreenshot();
+      }
+    },
+    {
+      label: 'About',
+      click() {
+
+        aboutWindow = new BrowserWindow({
+          skipTaskbar: true,
+          resizable: false
+
+        })
+
+        aboutWindow.loadURL(url.format({
+          pathname: path.join(__dirname, 'aboutWindow.html'),
+          protocol: 'file:',
+          slashes: true
+        }));
+
+        aboutWindow.webContents.openDevTools();
+
+      }
+    },
+    {
+      label: 'Quit',
+      click() { app.quit()}
+    }
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setContextMenu(contextMenu)
+
+
+
+
   // Register a 'CommandOrControl+Insert' shortcut listener.
   const ret = globalShortcut.register('CommandOrControl+Insert', () => {
 
+    takeScreenshot()
+
+  })
+
+  if (!ret) {
+    console.log('registration failed')
+  }
+
+  // Check whether a shortcut is registered.
+  console.log(globalShortcut.isRegistered('CommandOrControl+Insert'))
 
 
+
+
+  function takeScreenshot() {
 
     captureWindow.webContents.send('take', 'take_screen_shot');
 
@@ -85,9 +136,9 @@ app.on('ready', function () {
         slashes: true
 
       }));
-    
+
     // mainWindow.setMenu(menu);
-    
+
     mainWindow.once('ready-to-show', () => {
       mainWindow.show()
       mainWindow.webContents.openDevTools();
@@ -96,20 +147,8 @@ app.on('ready', function () {
 
 
 
-
-
-
-
-
-
-  })
-
-  if (!ret) {
-    console.log('registration failed')
   }
 
-  // Check whether a shortcut is registered.
-  console.log(globalShortcut.isRegistered('CommandOrControl+Insert'))
 
 
 
@@ -145,10 +184,13 @@ exports.close_main_window = () => {
   })
   let original_img_path = path.join(os.tmpdir(), 'screenshot.png');
   let cropped_img_path = path.join(os.tmpdir(), 'cropped.png');
-  fs.unlink(original_img_path, (err) => {});
-  fs.unlink(cropped_img_path, (err) => {});
+  fs.unlink(original_img_path, (err) => { });
+  fs.unlink(cropped_img_path, (err) => { });
 
 
 }
+
+
+
 
 

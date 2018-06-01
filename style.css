@@ -1,0 +1,18 @@
+#github_logo { 
+
+    margin-top: 150px;
+    margin-left: 350px;
+
+    
+}
+
+#version{
+    text-align: center;
+}
+
+#logo {
+    
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
