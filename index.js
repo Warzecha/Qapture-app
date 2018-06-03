@@ -144,7 +144,7 @@ app.on('ready', function () {
       
       mainWindow.focus()
     })
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
 
   }

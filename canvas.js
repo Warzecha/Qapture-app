@@ -93,31 +93,52 @@ image.addEventListener('load', function () {
 let new_selection = false;
 
 let dragging = false;
-let drag_prevX;
-let drag_prevY;
+let prevX;
+let prevY;
+
+let resizing = 0;
 
 
 
 canvas.addEventListener('mousedown', function (event) {
 
     // console.log(event);
-
-    if(insideSelection())
-    {
+    prevX = event.screenX;
+    prevY = event.screenY;
+    if (insideSelection()) {
         dragging = true;
-        drag_prevX = event.screenX;
-        drag_prevY = event.screenY;
+        
 
+    } else if (atTopBorder() && atLeftBorder()) {
+        resizing = 1;
+    } else if (atTopBorder() && atRightBorder()) {
+        resizing = 2;
+    } else if (atBottomBorder() && atRightBorder()) {
+        resizing = 3;
+
+    } else if (atBottomBorder() && atLeftBorder()) {
+        resizing = 4;
     }
-    else
-    {
-    selection.x1 = event.screenX;
-    selection.y1 = event.screenY;
-    selection.x2 = event.screenX;
-    selection.y2 = event.screenY;
-    new_selection = true;
+    else if (atTopBorder()) {
+        resizing = 5;
     }
-    
+    else if (atBottomBorder()) {
+        resizing = 6;
+    }
+    else if (atLeftBorder()) {
+        resizing = 7;
+    }
+    else if (atRightBorder()) {
+        resizing = 8;
+    }
+    else {
+        selection.x1 = event.screenX;
+        selection.y1 = event.screenY;
+        selection.x2 = event.screenX;
+        selection.y2 = event.screenY;
+        new_selection = true;
+    }
+
 
 
 
@@ -134,38 +155,123 @@ canvas.addEventListener("mouseup", function (event) {
         selection.y2 = event.screenY;
         new_selection = false;
     }
-    else if(dragging)
-    {
-        dragging = false;
+    
+    dragging = false;
+    resizing = 0;
 
-    }
+    
 
 
 });
 
 canvas.addEventListener("mousemove", function (event) {
-
+    let deltaX = event.screenX - prevX;
+    let deltaY = event.screenY - prevY;
     if (new_selection) {
         selection.x2 = event.screenX;
         selection.y2 = event.screenY;
-    } else if(dragging)
-    {
-        let deltaX = event.screenX - drag_prevX;
-        let deltaY = event.screenY - drag_prevY;
+    } else if (dragging) {
+        
 
         selection.x1 += deltaX;
         selection.y1 += deltaY;
         selection.x2 += deltaX;
         selection.y2 += deltaY;
 
-        drag_prevX = event.screenX;
-        drag_prevY = event.screenY;
+        
+
+    } else if( resizing != 0)
+    {
+        // if(resizing == 1)
+        // {
+
+        // }
+        // if(resizing == 2)
+        // {
+
+        // }
+        // if(resizing == 3)
+        // {
+
+        // }
+        // if(resizing == 4)
+        // {
+
+        // }
+        if(resizing == 5 || resizing == 1 || resizing == 2)
+        {
+            if(selection.y1 > selection.y2)
+            {    
+                selection.y2 += deltaY;
+
+            }else
+            {
+                selection.y1 += deltaY;
+                
+
+            }
+
+        }
+        if(resizing == 6 || resizing == 3 || resizing == 4)
+        {
+            if(selection.y1 < selection.y2)
+            {    
+                selection.y2 += deltaY;
+
+            }else
+            {
+                selection.y1 += deltaY;
+                
+
+            }
+
+        }
+        if(resizing == 7 || resizing == 1 || resizing == 4)
+        {
+
+            if(selection.x1 > selection.x2)
+            {    
+                selection.x2 += deltaX;
+
+            }else
+            {
+                selection.x1 += deltaX;
+                
+
+            }
+
+
+        }
+        if(resizing == 8 || resizing == 2 || resizing == 3)
+        {
+
+            if(selection.x1 < selection.x2)
+            {    
+                selection.x2 += deltaX;
+
+            }else
+            {
+                selection.x1 += deltaX;
+                
+
+            }
+
+        }
+        
+
+
+
+
+
 
     }
 
+    prevX = event.screenX;
+    prevY = event.screenY;
+
     lastMouseX = event.screenX;
     lastMouseY = event.screenY;
-    
+
 
 
 
@@ -194,12 +300,10 @@ Mousetrap.bind('right', function () {
 
 Mousetrap.bind('shift+up', function () {
 
-    if(selection.y2 < selection.y1)
-    {
+    if (selection.y2 < selection.y1) {
         selection.y1 -= 1;
     }
-    else
-    {
+    else {
         selection.y2 -= 1;
     }
 
@@ -208,12 +312,10 @@ Mousetrap.bind('shift+up', function () {
 
 Mousetrap.bind('shift+down', function () {
 
-    if(selection.y2 < selection.y1)
-    {
+    if (selection.y2 < selection.y1) {
         selection.y1 += 1;
     }
-    else
-    {
+    else {
         selection.y2 += 1;
     }
 
@@ -222,12 +324,10 @@ Mousetrap.bind('shift+down', function () {
 
 Mousetrap.bind('shift+right', function () {
 
-    if(selection.x2 < selection.x1)
-    {
+    if (selection.x2 < selection.x1) {
         selection.x1 += 1;
     }
-    else
-    {
+    else {
         selection.x2 += 1;
     }
 
@@ -235,12 +335,10 @@ Mousetrap.bind('shift+right', function () {
 
 Mousetrap.bind('shift+left', function () {
 
-    if(selection.x2 < selection.x1)
-    {
+    if (selection.x2 < selection.x1) {
         selection.x1 -= 1;
     }
-    else
-    {
+    else {
         selection.x2 -= 1;
     }
 
@@ -278,28 +376,22 @@ function animate() {
     ctx.fillRect(Math.min(selection.x1, selection.x2), 0, Math.abs(selection.x2 - selection.x1), Math.min(selection.y1, selection.y2));
     ctx.fillRect(Math.min(selection.x1, selection.x2), Math.max(selection.y1, selection.y2), Math.abs(selection.x2 - selection.x1), canvas.height);
 
-    if(insideSelection())
-    {
+    if (insideSelection()) {
         console.log('Change cursor')
         canvas.style.cursor = 'move';
-    }else if((atTopBorder() && atLeftBorder()) || (atBottomBorder() && atRightBorder()))
-    {
+    } else if ((atTopBorder() && atLeftBorder()) || (atBottomBorder() && atRightBorder())) {
         canvas.style.cursor = 'nwse-resize';
-    }else if((atBottomBorder() && atLeftBorder()) || (atTopBorder() && atRightBorder()))
-    {
+    } else if ((atBottomBorder() && atLeftBorder()) || (atTopBorder() && atRightBorder())) {
         canvas.style.cursor = 'nesw-resize';
-        
+
     }
-    else if(atTopBorder() || atBottomBorder())
-    {
+    else if (atTopBorder() || atBottomBorder()) {
         canvas.style.cursor = 'ns-resize';
     }
-    else if(atLeftBorder() || atRightBorder())
-    {
+    else if (atLeftBorder() || atRightBorder()) {
         canvas.style.cursor = 'ew-resize';
     }
-    else
-    {
+    else {
         canvas.style.cursor = 'crosshair';
     }
 
@@ -310,39 +402,42 @@ function animate() {
 
 let border_width = 5;
 
-function insideSelection()
-{
-    
-return ((selection.x1 + border_width < lastMouseX && lastMouseX < selection.x2 - border_width ) || (selection.x2 + border_width < lastMouseX && lastMouseX < selection.x1 - border_width )) && ((selection.y1 + border_width < lastMouseY && lastMouseY < selection.y2 - border_width ) || (selection.y2 + border_width < lastMouseY && lastMouseY < selection.y1 - border_width ))
+function insideSelection() {
+
+    return ((selection.x1 + border_width < lastMouseX && lastMouseX < selection.x2 - border_width) || (selection.x2 + border_width < lastMouseX && lastMouseX < selection.x1 - border_width)) && ((selection.y1 + border_width < lastMouseY && lastMouseY < selection.y2 - border_width) || (selection.y2 + border_width < lastMouseY && lastMouseY < selection.y1 - border_width))
 
 }
 
-function atTopBorder()
-{
+function atTopBorder() {
     let topBorderY = Math.min(selection.y1, selection.y2);
+    let minX = Math.min(selection.x1, selection.x2);
+    let maxX = Math.max(selection.x1, selection.x2);
 
-    return ((selection.x1 < lastMouseX && lastMouseX < selection.x2 ) && Math.abs(lastMouseY - topBorderY) <= border_width);
+    return ((minX - border_width < lastMouseX && lastMouseX < maxX + border_width) && Math.abs(lastMouseY - topBorderY) <= border_width);
 }
 
 
-function atBottomBorder()
-{
+function atBottomBorder() {
     let bottomBorderY = Math.max(selection.y1, selection.y2);
+    let minX = Math.min(selection.x1, selection.x2);
+    let maxX = Math.max(selection.x1, selection.x2);
 
-    return ((selection.x1 < lastMouseX && lastMouseX < selection.x2 ) && Math.abs(lastMouseY - bottomBorderY) <= border_width);
+    return ((minX - border_width < lastMouseX && lastMouseX < maxX + border_width) && Math.abs(lastMouseY - bottomBorderY) <= border_width);
 }
 
 
-function atLeftBorder()
-{
+function atLeftBorder() {
     let leftBorderX = Math.min(selection.x1, selection.x2);
+    let minY = Math.min(selection.y1, selection.y2);
+    let maxY = Math.max(selection.y1, selection.y2);
 
-    return ((selection.y1< lastMouseY && lastMouseY < selection.y2 ) && Math.abs(lastMouseX - leftBorderX) <= border_width);
+    return ((minY - border_width < lastMouseY && lastMouseY < maxY + border_width) && Math.abs(lastMouseX - leftBorderX) <= border_width);
 }
 
-function atRightBorder()
-{
+function atRightBorder() {
     let rightBorderX = Math.max(selection.x1, selection.x2);
+    let minY = Math.min(selection.y1, selection.y2);
+    let maxY = Math.max(selection.y1, selection.y2);
 
-    return ((selection.y1< lastMouseY && lastMouseY < selection.y2 ) && Math.abs(lastMouseX - rightBorderX) <= border_width);
+    return ((minY - border_width < lastMouseY && lastMouseY < maxY + border_width) && Math.abs(lastMouseX - rightBorderX) <= border_width);
 }
