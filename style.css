@@ -1,18 +1,31 @@
 #github_logo { 
 
     margin-top: 150px;
-    margin-left: 350px;
-
+    margin-left: 195px;
     
 }
 
 #version{
     text-align: center;
+    color: #555;
 }
 
-#logo {
-    
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+#name
+{
+    text-align: center;
+}
+
+#logo
+{
+    float:left;
+    width: 250px;
+    /* height: 200px; */
+
+}
+
+
+#logo-div
+{
+    margin: 50px;
+
 }
