@@ -51,7 +51,7 @@ app.on('ready', function () {
 
 
 
-  tray = new Tray('./assets/images/tray_icon.png')
+  tray = new Tray('./assets/images/nice_logo3.png')
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Take screenshot',
@@ -65,7 +65,8 @@ app.on('ready', function () {
 
         aboutWindow = new BrowserWindow({
           skipTaskbar: true,
-          resizable: false
+          resizable: false,
+          height: 400
 
         })
 
@@ -75,7 +76,7 @@ app.on('ready', function () {
           slashes: true
         }));
 
-        // aboutWindow.webContents.openDevTools();
+        aboutWindow.webContents.openDevTools();
 
       }
     },
@@ -84,7 +85,7 @@ app.on('ready', function () {
       click() { app.quit()}
     }
   ])
-  tray.setToolTip('This is my application.')
+  tray.setToolTip('Qapture')
   tray.setContextMenu(contextMenu)
 
 
