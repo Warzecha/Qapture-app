@@ -51,11 +51,12 @@ app.on('ready', function () {
 
 
 
-  tray = new Tray('./assets/images/nice_logo3.png')
+  tray = new Tray(process.resourcesPath+ '/app/assets/images/nice_logo3.png')
   const contextMenu = Menu.buildFromTemplate([
     {
       label: 'Take screenshot',
       click() {
+        // contextMenu.closePopup(tray);
         takeScreenshot();
       }
     },
@@ -76,7 +77,7 @@ app.on('ready', function () {
           slashes: true
         }));
 
-        aboutWindow.webContents.openDevTools();
+        // aboutWindow.webContents.openDevTools();
 
       }
     },
@@ -145,7 +146,7 @@ app.on('ready', function () {
       
       mainWindow.focus()
     })
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
 
   }
