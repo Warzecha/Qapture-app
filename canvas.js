@@ -54,6 +54,7 @@ Mousetrap.bind('ctrl+c', function () {
         if (err) return console.log(err.message);
         else {
             main.copy_cropped();
+            main.close_main_window();
         }
     })
 
